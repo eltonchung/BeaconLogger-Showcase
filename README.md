@@ -8,17 +8,28 @@
 
 iBeaconLog（開發專案名稱：BeaconLogger）是使用 Swift、SwiftUI、SwiftData 與 Core Location 開發的 iOS 原生 App。它針對指定 iBeacon 的進入與離開建立時間紀錄，適合個人工作場所、工作室等固定場域的輔助紀錄。
 
-> **這是產品與技術展示 repo，不是 App 原始碼發布庫。**
-> 本 repo 僅提供專案介紹、功能說明與展示素材；完整 App 原始碼及開發歷史保留於 Private 主 repo，未在此公開。
+> 這個作品頁公開功能介紹、操作畫面與一段 SwiftUI 版面程式碼。完整 App 原始碼與開發歷史保留於私有專案。
 
 | 專案概況 | 說明 |
 | --- | --- |
 | 支援平台 | iPhone，iOS 17 以上 |
-| 展示版本 | 1.1.1 |
+| 展示版本 | 1.2（Build 22） |
 | 技術 | Swift 6、SwiftUI、SwiftData、Core Location、UserNotifications、XCTest |
 | Beacon 設定 | 最多 5 組具名 iBeacon，以 UUID 辨識 |
 | 資料處理 | 本機儲存；無後端、無登入、無廣告、無第三方分析或追蹤 SDK |
 | 介面語言 | 繁體中文；紀錄時間使用台北時區 |
+
+## iPhone Duo 操作展示
+
+展開 iPhone Duo 時，左欄顯示監控狀態，右欄可以篩選和瀏覽進出紀錄。闔上手機後，兩個區塊回到同一欄，一般 iPhone 直向也使用這個版面。
+
+[![iPhone Duo 展開畫面，左欄顯示監控狀態，右欄列出含完整日期、星期與時間的進出紀錄](assets/iphone-duo-open.png)](assets/iphone-duo-open.png)
+
+**收合與展開時保留勾選。** 在「進入」清單中勾選一筆，收合再展開，仍可接著處理同一筆紀錄。取消勾選後，已選筆數才會回到 0。
+
+[![iPhone Duo 操作動圖，展示在進入清單勾選一筆紀錄、切換螢幕並取消勾選](assets/iphone-duo-demo.gif)](assets/iphone-duo-demo.gif)
+
+*畫面取自 Apple 的 iPhone Duo 模擬器，使用本機建立的範例紀錄。15 秒動圖由操作截圖編成，局部放大了勾選圖示與已選筆數。*
 
 ## 為什麼做這個 App？
 
@@ -139,6 +150,8 @@ flowchart TD
 
 ### 設計取捨
 
+**Duo 版面與勾選狀態。** 紀錄頁以 560 點可用寬度決定是否並排，讓監控欄至少有 240 點、紀錄欄至少有 320 點。`AnyLayout` 切換排列方向，紀錄頁持有目前的篩選條件與已選紀錄 ID。收合或展開時，使用者能接續同一次編輯。[SwiftUI 版面節錄](samples/DuoLogLayout.swift)
+
 - **UUID-only 設定**：減少設定項目，適合不同 UUID 對應不同場域；不提供以 Major／Minor 區分同 UUID 裝置的管理功能。
 - **事件驅動**：依範圍變化處理紀錄，不持續追蹤 GPS，也不靠背景倒數計時器補寫事件。
 - **狀態與紀錄分開處理**：冷卻期間仍更新範圍狀態，降低忽略一次離開後，後續進入被錯誤當作重複事件的問題。
@@ -168,7 +181,7 @@ flowchart TD
 
 現有 XCTest 涵蓋 23 個測試案例，包括冷卻剛好到期、冷卻內反向事件、跨日仍未到期、跨日已到期、0 分鐘、延遲的較早事件、UUID 格式與重複驗證、5 組上限、設定保存及舊版遷移、完整日期顯示與導覽狀態。
 
-2026/10/05 驗證：Xcode 27.0、iPhone 17 Pro／iOS 26.5 Simulator，build 成功，23/23 項單元測試通過。建置工具僅提示未使用 App Intents，略過對應中繼資料擷取；本次未進行實體 Beacon 測試。
+1.2（Build 22）以 Xcode 27.2 封存，23 項專案單元測試全數通過。在 iOS 27.2 模擬器中，Duo 收合、半開與再次展開後保留篩選和勾選，iPhone 18 Pro 直向維持單欄。實體 iBeacon 的鎖屏進出仍待現場驗證。
 
 - iOS Simulator 可驗證介面與資料流程，但無法驗證真實 iBeacon 廣播；模擬事件目前也沒有使用者介面入口。
 - 實體偵測仍須搭配 iPhone 與實體 Beacon 測試；單元測試通過不代表所有背景情境都已驗證。
@@ -180,10 +193,11 @@ flowchart TD
 
 ## 公開範圍與相關連結
 
-`BeaconLogger-Showcase` 是獨立建立的公開展示 repo，僅包含展示文件與素材。開發主 repo `BeaconLogger` 維持 Private，完整 App 原始碼、測試實作、Xcode 專案、建置設定與開發歷史不在此發布。
+`samples/DuoLogLayout.swift` 擷取紀錄頁的版面邏輯，以兩個可替換的 SwiftUI 視圖代表監控區與紀錄清單。監控服務、資料層、完整測試與 Xcode 專案保留於私有專案。
 
 公開展示不代表提供完整原始碼或 App 原始碼的開源授權；本頁的用途是說明作品成果、功能與技術設計。
 
+- [App Store](https://apps.apple.com/tw/app/ibeaconlog/id6793816179)
 - [隱私權政策](https://eltonchung.github.io/my-ios-tool-privacy/)
 - [使用支援](https://eltonchung.github.io/my-ios-tool-privacy/support.html)
 - [作者 GitHub](https://github.com/eltonchung)
